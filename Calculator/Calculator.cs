@@ -1,111 +1,132 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace CalculatorDomainDemo;
 
 /// <summary>
-/// This class represents the DOMAIN BEHAVIOUR.
+/// Owns calculator behaviour and internal state.
 /// 
-/// In real systems:
-/// - This is where rules live
-/// - This is where decisions are made
+/// This class:
+/// - Performs calculations
+/// - Applies business rules
+/// - Maintains history
 /// 
-/// In the booking system, this is similar to:
-/// - Booking management logic
+/// Booking analogy:
+/// similar to a booking logic / rules component.
 /// </summary>
 public class Calculator
 {
-    //fields
-    private readonly List<CalculationRequest> _calculationHistory = new();
+    /*
+     * INTERNAL MUTABLE STATE
+     * 
+     * This list is intentionally mutable.
+     * The calculator changes it over time.
+     */
+    private readonly List<CalculationRequest> _history = new();
 
-    public IReadOnlyList<CalculationRequest> CalculationHistory => _calculationHistory.AsReadOnly();
-    
-    /// <summary>
-    /// This property stores state INSIDE the object.
-    /// 
-    /// Notice:
-    /// - Public getter
-    /// - Private setter
-    /// 
-    /// This means:
-    /// - Other code can read the value
-    /// - Only the Calculator can change it
-    /// 
-    /// This protects the object from invalid changes.
-    /// </summary>
-    public int LastResult { get; private set; }
-
-    /// <summary>
-    /// Every calculator must have a name.
-    /// 
-    /// Constructors define what MUST exist
-    /// for an object to be valid.
-    /// </summary>
     public string Name { get; }
+    public int LastResult { get; private set; }
 
     public Calculator(string name)
     {
-        // Guard clause:
-        // We do NOT allow invalid objects to exist.
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Calculator must have a name");
+            throw new ArgumentException("Calculator must have a name.");
 
         Name = name;
     }
 
-    /// <summary>
-    /// This method applies business rules.
-    /// 
-    /// It does NOT:
-    /// - Read from the console
-    /// - Print output
-    /// 
-    /// This separation is important because:
-    /// - Console apps are temporary
-    /// - Business logic must survive
-    /// 
-    /// In the booking system:
-    /// - This would decide if a booking is allowed
-    /// - This would enforce capacity rules
-    /// </summary>
+    /*
+     * ============================
+     * HISTORY ACCESS (COPY)
+     * ============================
+     * 
+     * IMPORTANT DESIGN CHOICE:
+     * 
+     * We return a COPY of the list,
+     * not the internal list itself.
+     * 
+     * This means:
+     * - External code cannot observe live mutation
+     * - External code cannot affect internal state
+     * - The calculator fully controls its data
+     * 
+     * Trade-off:
+     * - Slightly more memory usage
+     * - Stronger safety and predictability
+     */
+    public IReadOnlyList<CalculationRequest> GetHistory()
+    {
+        return _history.ToList(); // defensive copy
+    }
+
+    /*
+     * ============================
+     * CORE BEHAVIOUR
+     * ============================
+     */
     public int Calculate(int a, int b, OperationType operation)
     {
-        // Switch expression ensures ALL enum cases are handled
-        LastResult = operation switch
+        // Guard clause: fail fast
+        if (operation == OperationType.Divide && b == 0)
+            throw new InvalidOperationException("Cannot divide by zero.");
+
+        int result = operation switch
         {
             OperationType.Add => a + b,
             OperationType.Subtract => a - b,
             OperationType.Multiply => a * b,
             OperationType.Divide => a / b,
-
-            // This should never happen if enums are used correctly
-            _ => throw new InvalidOperationException("Invalid operation")
+            _ => throw new InvalidOperationException("Invalid operation.")
         };
 
-        CalculationRequest request = new CalculationRequest(a, b, operation);
-        _calculationHistory.Add(request);
+        // MUTATION happens here (internally only)
+        _history.Add(new CalculationRequest(a, b, operation));
 
-        return LastResult;
+        LastResult = result;
+        return result;
     }
 
-    // how many additions have been done
-    public List<CalculationRequest> ReturnAdditions()
-    {
-        List<CalculationRequest> additions = new List<CalculationRequest>();
+    /*
+     * ============================
+     * LINQ AS QUESTIONS
+     * ============================
+     */
 
-        foreach (CalculationRequest req in _calculationHistory)
+    public bool HasUsedDivision()
+    {
+        return _history.Any(r => r.Operation == OperationType.Divide);
+    }
+
+    public CalculationRequest? GetLastCalculation()
+    {
+        return _history.LastOrDefault();
+    }
+
+    public IEnumerable<CalculationRequest> GetByOperation(OperationType operation)
+    {
+        return _history.Where(r => r.Operation == operation);
+    }
+
+    /*
+     * ============================
+     * GROUPING WITH DICTIONARY
+     * ============================
+     */
+    public Dictionary<OperationType, List<CalculationRequest>> GroupByOperation()
+    {
+        var grouped = new Dictionary<OperationType, List<CalculationRequest>>();
+
+        foreach (var request in _history)
         {
-            if (req.Operation == OperationType.Add)
+            if (!grouped.ContainsKey(request.Operation))
             {
-                additions.Add(req);
+                grouped[request.Operation] = new List<CalculationRequest>();
             }
+
+            grouped[request.Operation].Add(request);
         }
 
-        return additions;
+        return grouped;
     }
-
-    public List<CalculationRequest> ReturnAdditions_LINQ()
-    {
-        List<CalculationRequest> req = new List<CalculatonRequest>();
-    
-        return req;
-    }
-
 }
