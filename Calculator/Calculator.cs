@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Threading;
 
 namespace CalculatorDomainDemo;
 
@@ -36,35 +38,13 @@ public class Calculator
         Name = name;
     }
 
-    /*
-     * ============================
-     * HISTORY ACCESS (COPY)
-     * ============================
-     * 
-     * IMPORTANT DESIGN CHOICE:
-     * 
-     * We return a COPY of the list,
-     * not the internal list itself.
-     * 
-     * This means:
-     * - External code cannot observe live mutation
-     * - External code cannot affect internal state
-     * - The calculator fully controls its data
-     * 
-     * Trade-off:
-     * - Slightly more memory usage
-     * - Stronger safety and predictability
-     */
+    
     public IReadOnlyList<CalculationRequest> GetHistory()
     {
         return _history.ToList(); // defensive copy
     }
 
-    /*
-     * ============================
-     * CORE BEHAVIOUR
-     * ============================
-     */
+    
     public int Calculate(int a, int b, OperationType operation)
     {
         // Guard clause: fail fast
@@ -87,16 +67,29 @@ public class Calculator
         return result;
     }
 
-    /*
-     * ============================
-     * LINQ AS QUESTIONS
-     * ============================
-     */
+   
+   public CalculationRequest GetCalculationRequest()
+    {   
+        if (!_history.Any())
+            throw new CalculationHistoryException();
+        
+        else
+        {
+            CalculationRequest request = _history.Last();
+            return request;
+        }
+    }
 
     public bool HasUsedDivision()
     {
         return _history.Any(r => r.Operation == OperationType.Divide);
     }
+
+    public CalculationRequest? GetLastMultiplication()
+      {
+        return _history.LastOrDefault(m => m.Operation == OperationType.Multiply);
+      }
+
 
     public CalculationRequest? GetLastCalculation()
     {
@@ -129,4 +122,27 @@ public class Calculator
 
         return grouped;
     }
+
+
+    //Writing History to files
+    public async Task SaveHistoryAsync(string filepath)
+    {
+        List<CalculationRequest> snapshot = _history.ToList();
+        string json = JsonSerializer.Serialize(snapshot);
+        await File.WriteAllTextAsync(filepath, json);
+
+    }
+
+    public async Task<List<CalculationRequest>> LoadHistoryAsync(string filepath)
+    {
+        if (File.Exists(filepath))
+        {
+            string json = await File.ReadAllTextAsync(filepath);
+            return JsonSerializer.Deserialize<List<CalculationRequest>>(json) ?? new List<CalculationRequest>();
+        }
+       
+    }
+
+
+
 }

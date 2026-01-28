@@ -1,9 +1,10 @@
 using System;
+using System.Threading.Tasks;
 using CalculatorDomainDemo;
 
 class Program
 {
-    static void Main()
+    static async Task Main()
     {
         Console.WriteLine("=== Calculator – End of Day 2 (Defensive Copy Version) ===");
 
@@ -37,7 +38,29 @@ class Program
         {
             Console.WriteLine($"Last calculation: {last.A} {last.Operation} {last.B}");
         }
+        // Handling the GetCalculationRequest method
+        try
+        {
+            CalculationRequest req = calculator.GetCalculationRequest();
+            Console.WriteLine($"Most recent calculation request: {req.A} {req.Operation} {req.B}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
 
+        //Using saving to file
+        try
+        {
+            await calculator.SaveHistoryAsync("history.json");
+            Console.WriteLine("Calculator History saved!");   
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Failed to save Calculator History because: {ex.Message}");
+
+            
+        }
         Console.WriteLine("\n=== End ===");
     }
 }
