@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">   <!-- or Microsoft.NET.Sdk.Web if it's meant to be something else -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Library</OutputType>   
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

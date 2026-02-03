@@ -13,3 +13,11 @@ C:\Users\Training Center 1\Calculator-Example\Calculator\obj\Debug\net8.0\refint
 C:\Users\Training Center 1\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.pdb
 C:\Users\Training Center 1\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.genruntimeconfig.cache
 C:\Users\Training Center 1\Calculator-Example\Calculator\obj\Debug\net8.0\ref\Calculator.dll
+C:\Users\Training Center 1\Documents\CLONES\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Training Center 1\Documents\CLONES\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.AssemblyInfoInputs.cache
+C:\Users\Training Center 1\Documents\CLONES\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.AssemblyInfo.cs
+C:\Users\Training Center 1\Documents\CLONES\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.csproj.CoreCompileInputs.cache
+C:\Users\Training Center 1\Documents\CLONES\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.sourcelink.json
+C:\Users\Training Center 1\Documents\CLONES\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.dll
+C:\Users\Training Center 1\Documents\CLONES\Calculator-Example\Calculator\obj\Debug\net8.0\refint\Calculator.dll
+C:\Users\Training Center 1\Documents\CLONES\Calculator-Example\Calculator\obj\Debug\net8.0\Calculator.pdb
