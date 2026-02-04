@@ -28,8 +28,15 @@ namespace CalculatorAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GeAll()
         {    
-            var calculations = await _calculatorService.GetAllAsync();
-            return Ok(calculations);
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                var calculations = await _calculatorService.GetAllAsync();
+                return Ok(calculations);
+            }
         }
     }
 }
