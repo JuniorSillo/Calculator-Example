@@ -1,5 +1,2 @@
-# Calculator-Example
-
-## This is a C# Calculator, the first task for the BitCube's Dev Trainee Program.
-### Where we will use basic calculator methods:
-* (+ : Addition, - : Subtraction , * : Multiple , / : Divide)
+# CalculatorDomainDemo
+We are creating a calculator to demonstrate C# as a domain language
